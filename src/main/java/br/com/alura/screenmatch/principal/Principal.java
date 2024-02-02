@@ -64,8 +64,7 @@ public class Principal {
                 .flatMap(t -> t.episodios().stream()
                     .map(d -> new Episodio(t.numeroTemporada(), d))
                 ).collect(Collectors.toList());
-
-
+        
         episodios.forEach(System.out::println);
 
         System.out.println("A partir de qual ano deseja ver os episódios?");
