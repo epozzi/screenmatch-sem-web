@@ -278,5 +278,30 @@ public class Principal {
                             e.getDataLancamento()));
         }
     }
+
+    public void buscarEpisodios() {
+
+        List<Serie> serieList = serieRepository.findAll();
+
+        serieList.forEach(s -> {
+            List<DadosTemporada> listaTemporadas = new ArrayList<>();
+
+            var tituloSerie = s.getTitulo().replace(" ", "+");
+
+            for (int i = 1; i <= s.getTotalTemporadas(); i++) {
+                var json = consumoApi.obterDados(ENDERECO + tituloSerie + "&season=" + i + APIKEY);
+                DadosTemporada dadosTemporada = conversor.obterDados(json, DadosTemporada.class);
+                listaTemporadas.add(dadosTemporada);
+            }
+            listaTemporadas.forEach(System.out::println);
+
+            List<Episodio> episodios = listaTemporadas.stream()
+                    .flatMap(d -> d.episodios().stream()
+                            .map(e -> new Episodio(d.numeroTemporada(), e)))
+                    .collect(Collectors.toList());
+            s.setEpisodios(episodios);
+            serieRepository.save(s);
+        });
+    }
 }
 
